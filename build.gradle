@@ -1,0 +1,42 @@
+plugins {
+    id 'fabric-loom' version '1.2-SNAPSHOT'
+    id 'maven-publish'
+}
+
+version = project.mod_version
+
+group = project.maven_group
+
+archivesBaseName = project.archives_base_name
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'Fabric'
+        url = 'https://maven.fabricmc.net/'
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
+}
+
+loom {
+    minecraftVersion = project.minecraft_version
+    runConfigs.create {
+        name = 'client'
+        mainClass = 'net.fabricmc.devlaunchinjector.Main'
+        main = 'client'
+        propertyMap.inheritsFrom = loom.runs.getByName('client')
+        propertyMap.put('fabric.dli.main', 'net.fabricmc.fabric.impl.client.main.ClientMain')
+    }
+
+    runs.create {
+        name = 'server'
+        mainClass = 'net.fabricmc.devlaunchinjector.Main'
+        main = 'server'
+        propertyMap.inheritsFrom = loom.runs.getByName('server')
+        propertyMap.put('fabric.dli.main', 'net.fabricmc.fabric.impl.server.main.ServerMain')
+    }
+}
